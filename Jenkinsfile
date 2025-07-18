@@ -4,7 +4,7 @@ pipeline {
     stages {
         stage('Clone Repo') {
             steps {
-                git 'https://github.com/your-github-username/attendance-tracker.git'
+                git 'https://github.com/Bhagyavan8050/AttendanceTracker.git'
             }
         }
 
@@ -28,7 +28,7 @@ pipeline {
 
         stage('Push to DockerHub') {
             steps {
-                withCredentials([string(credentialsId: 'dockerhub-pass', variable: 'DOCKER_PASSWORD')]) {
+                withCredentials([string(credentialsId: 'dockerhost299', variable: 'Bhagyavan8050')]) {
                     sh 'echo $DOCKER_PASSWORD | docker login -u your-dockerhub-username --password-stdin'
                     sh 'docker tag attendance-tracker-app your-dockerhub-username/attendance-tracker-app:latest'
                     sh 'docker push your-dockerhub-username/attendance-tracker-app:latest'
