@@ -3,10 +3,11 @@ pipeline {
 
     stages {
         stage('Clone Repo') {
-            steps {
-                git credentialsId: 'your-github-creds-id', url: 'https://github.com/Bhagyavan8050/AttendanceTracker.git'
-            }
-        }
+    steps {
+        git branch: 'main', url: 'https://github.com/Bhagyavan8050/AttendanceTracker.git'
+    }
+}
+
 
         stage('Build Docker Image') {
             steps {
