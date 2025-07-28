@@ -24,3 +24,9 @@ if _name_ == '_main_':
     with app.app_context():
         db.create_all()
     app.run(host="0.0.0.0", port=5000)
+
+@app.route('/attendance')
+def check():
+    print("API /attendance hit")
+    return jsonify({"status": "success"}), 200
+
