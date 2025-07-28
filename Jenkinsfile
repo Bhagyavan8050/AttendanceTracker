@@ -26,10 +26,19 @@ pipeline {
         }
 
         stage('Test API') {
-            steps {
-                bat 'curl http://localhost:5000/attendance'
-            }
-        }
+    steps {
+        bat '''
+            echo Waiting for app to start...
+            for /l %%x in (1, 1, 30) do (
+                curl http://localhost:5000/attendance && exit /b 0
+                timeout /t 1 >nul
+            )
+            echo Application did not respond in time
+            exit /b 1
+        '''
+    }
+}
+
 
         stage('Push to DockerHub') {
             steps {
