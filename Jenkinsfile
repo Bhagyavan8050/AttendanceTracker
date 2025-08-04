@@ -2,8 +2,13 @@ pipeline {
     agent any
 
     tools {
-        // Optional: Ensure Git is defined under Manage Jenkins > Global Tools
+        // Make sure Git is configured in Jenkins under Global Tools Configuration
         git 'Default'
+    }
+
+    environment {
+        IMAGE_NAME = 'attendance-tracker-app'
+        PORT = '5000'
     }
 
     stages {
@@ -15,36 +20,41 @@ pipeline {
 
         stage('Build Docker Image') {
             steps {
-                bat 'docker build -t attendance-tracker-app .'
+                bat "docker build -t %IMAGE_NAME% ."
             }
         }
 
         stage('Run Docker Compose') {
             steps {
-                bat 'docker-compose up -d'
+                bat "docker-compose up -d"
             }
         }
 
         stage('Test API') {
-    steps {
-        bat '''
-            echo Waiting for app to start...
-            for /l %%x in (1, 1, 30) do (
-                curl http://localhost:5000/attendance && exit /b 0
-                timeout /t 1 >nul
-            )
-            echo Application did not respond in time
-            exit /b 1
-        '''
-    }
-}
+            steps {
+                bat '''
+                    echo Waiting for the app to start...
+                    setlocal enabledelayedexpansion
+                    for /l %%x in (1, 1, 30) do (
+                        curl -s http://localhost:%PORT%/attendance >nul
+                        if !errorlevel! == 0 (
+                            echo App is running!
+                            exit /b 0
+                        )
+                        timeout /t 2 >nul
+                    )
+                    echo Application did not respond in time
+                    exit /b 1
+                '''
+            }
+        }
 
-
-       stage('Push to DockerHub') {
+        stage('Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhost299', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
                         bat '''
+                            echo Logging into DockerHub...
                             echo %DOCKER_PASSWORD% | docker login -u %DOCKER_USERNAME% --password-stdin
                             docker tag attendance-tracker-app %DOCKER_USERNAME%/attendance-tracker-app:latest
                             docker push %DOCKER_USERNAME%/attendance-tracker-app:latest
@@ -54,3 +64,4 @@ pipeline {
             }
         }
     }
+}
