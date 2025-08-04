@@ -40,7 +40,7 @@ pipeline {
 }
 
 
-        stage('Push to DockerHub') {
+       stage('Push to DockerHub') {
             steps {
                 withCredentials([usernamePassword(credentialsId: 'dockerhost299', usernameVariable: 'DOCKER_USERNAME', passwordVariable: 'DOCKER_PASSWORD')]) {
                     script {
@@ -54,4 +54,3 @@ pipeline {
             }
         }
     }
-}
